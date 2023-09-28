@@ -1,0 +1,58 @@
+{
+	"job": {
+		"setting": {
+			"errorLimit": {
+				"percentage": 0,
+				"record": 0
+			},
+			"speed": {
+				"channel": 3,
+				"batchSize": 1024
+			}
+		},
+		"content": [
+			{
+				"reader": {
+					"name": "mysqlreader",
+					"parameter": {
+						"username": "${Mysql_User}",
+						"password": "${Mysql_PassWord}",
+						"splitPk": "",
+						"connection": [
+							{
+								"jdbcUrl": [
+									"jdbc:mysql://${Mysql_Ip}/${Mysql_Db}?useUnicode=true&characterEncoding=UTF-8"
+								],
+								"querySql": [
+									"${source_context}"
+								]
+							}
+						]
+					}
+				},
+				"writer": {
+					"name": "clickhousewriter",
+					"parameter": {
+						"username": "${CK_User}",
+						"password": "${CK_PassWord}",
+						"connection": [
+							{
+								"table": [
+									"${target_table}"
+								],
+								"jdbcUrl": "jdbc:clickhouse://${CK_Ip}/${CDMDB}?socket_timeout=300000"
+							}
+						],
+						"column": [${target_cloumns}
+						],
+						"preSql": [
+							"truncate table ${CDMDB}.${target_table} ;","select sleep(3);"
+						],
+						"postSql": [${post_context}
+						]
+					}
+				}
+			}
+		]
+	}
+}
